@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- Judul akan diatur oleh JS -->
+    <title>IZICharge</title>
+    
+<script src="https://cdn.tailwindcss.com"></script>
+    
+<script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'izi-primary': '#BFFC05', // Bright Lemon Green/Yellow
+                        'izi-secondary': '#121212', // Black background
+                        'izi-dark-card': '#1E1E1E',
+                        'izi-text': '#CCCCCC',
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Essential custom styles */
+        .izi-glow {
+            filter: drop-shadow(0 0 12px rgba(191, 252, 5, 0.6));
+        }
+        .hero-background {
+            background-image: url('assets/car-cover.jpg'); 
+            background-size: cover;
+            background-position: center;
+            background-repeat: no-repeat;
+            position: relative;
+        }
+        .hero-background::before {
+            content: "";
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 1;
+        }
+        .hero-content {
+            position: relative;
+            z-index: 2;
+        }
+        .fade-in {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+
+        /* Smooth Scroll Animation */
+        .animate-on-scroll {
+            opacity: 0;
+            transform: translateY(20px); /* Start slightly down */
+            transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+            /* Use CSS variable for staggered delays */
+            transition-delay: var(--scroll-delay, 0ms); 
+        }
+        .animate-on-scroll.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        /* Language Switcher Active State */
+        .lang-switcher.active {
+            color: #BFFC05; /* izi-primary */
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body class="bg-izi-secondary text-izi-text font-sans leading-relaxed">
+
+    
+
+<script>
+        // --- Kumpulan Teks untuk Bahasa ---
+        const translations = {
+            "en": {
+                "pageTitle": "IZICharge - Evolutionary EV Charging",
+                "navHome": "Home",
+                "navAbout": "About Us",
+                "navService": "Service",
+                "navContact": "Contact Us",
+                "heroLine1": "We Bring Future Ready",
+                "heroLine2": "Charging",
+                "heroLine3": " To Your",
+                "heroLine4": "Everyday Life",
+                "heroButton": "Learn More",
+                "aboutTitle": "Why Choose Us?",
+                "aboutSubtitle": "Evolutionary electric vehicle charging stations that are faster & more efficient.",
+                "aboutDesc": "We revolutionize EV charging, offering rapid charging capabilities, sustainability, and a seamless user experience.",
+                "aboutQuote": "\"Power Your Electric Vehicle With Energy That's As Clean As Your Drive.\"",
+                "featuresTitle": "Why Consumers Love IziCharge?",
+                "featuresSubtitle": "Smart Features Designed for Modern EV Users.",
+                "feature1Title": "24/7 Availability",
+                "feature1Desc": "Always-On Stations. Ready Anytime, Day or Night.",
+                "feature2Title": "Fast Charging",
+                "feature2Desc": "Get Back On The Road In Minutes, Not Hours.",
+                "feature3Title": "National Coverage",
+                "feature3Desc": "Find Charging Whenever Your Journey Takes You.",
+                "feature4Title": "Cost-Efficient",
+                "feature4Desc": "Clean Charging That's Affordable And Eco-Friendly.",
+                "appTitle": "Charge Anytime, Anywhere with our App.",
+                "appDesc": "Explore the features of the IZICharge mobile app.",
+                "appScreenshots": [
+                    'https://placehold.co/400x800/121212/BFFC05?text=App+Screen+1',
+                    'https://placehold.co/400x800/121212/BFFC05?text=App+Screen+2',
+                    'https://placehold.co/400x800/121212/BFFC05?text=App+Screen+3'
+                ],
+                "appScreenshotAlt": "App Screenshot",
+                "footerRights": "© 2025 IziCharge. All Rights Reserved.",
+                "footerLocationTitle": "Location & Contact",
+                "footerLocationDesc": "No.7. JL Sultan Agung, Guntur, Setiabudi, South Jakarta City, Jakarta 12980",
+                "footerPhone": "Phone: (021-83780-48)",
+                "footerNavTitle": "Navigation",
+                "imgAltLogo": "IZICharge Logo",
+                "imgAltCharger": "EV Charger Plugged In",
+                "menuOpen": "Open main menu"
+            },
+            "id": {
+                "pageTitle": "IZICharge - Pengisian EV Revolusioner",
+                "navHome": "Beranda",
+                "navAbout": "Tentang Kami",
+                "navService": "Layanan",
+                "navContact": "Hubungi Kami",
+                "heroLine1": "Kami Membawa Masa Depan",
+                "heroLine2": "Pengisian Daya",
+                "heroLine3": " untuk",
+                "heroLine4": "Hidup Anda",
+                "heroButton": "Pelajari Lebih Lanjut",
+                "aboutTitle": "Kenapa Memilih Kami?",
+                "aboutSubtitle": "Stasiun pengisian kendaraan listrik revolusioner yang lebih cepat & efisien.",
+                "aboutDesc": "Kami merevolusi pengisian daya EV, menawarkan kemampuan pengisian cepat, keberlanjutan, dan pengalaman pengguna yang mulus.",
+                "aboutQuote": "\"Isi Daya Kendaraan Listrik Anda Dengan Energi Sebersih Perjalanan Anda.\"",
+                "featuresTitle": "Mengapa Konsumen Suka IziCharge?",
+                "featuresSubtitle": "Fitur Cerdas Dirancang untuk Pengguna EV Modern.",
+                "feature1Title": "Ketersediaan 24/7",
+                "feature1Desc": "Stasiun Selalu Aktif. Siap Kapan Saja, Siang atau Malam.",
+                "feature2Title": "Pengisian Cepat",
+                "feature2Desc": "Kembali ke Jalan Dalam Hitungan Menit, Bukan Jam.",
+                "feature3Title": "Jangkauan Nasional",
+                "feature3Desc": "Temukan Pengisian Daya Kapan Pun Perjalanan Anda.",
+                "feature4Title": "Hemat Biaya",
+                "feature4Desc": "Pengisian Daya Bersih yang Terjangkau dan Ramah Lingkungan.",
+                "appTitle": "Isi Daya Kapan Saja, Di Mana Saja dengan Aplikasi kami.",
+                "appDesc": "Jelajahi fitur-fitur aplikasi seluler IZICharge.",
+                "appScreenshots": [
+                    'https://placehold.co/400x800/121212/BFFC05?text=Layar+Aplikasi+1',
+                    'https://placehold.co/400x800/121212/BFFC05?text=Layar+Aplikasi+2',
+                    'https://placehold.co/400x800/121212/BFFC05?text=Layar+Aplikasi+3'
+                ],
+                "appScreenshotAlt": "Cuplikan Aplikasi",
+                "footerRights": "© 2025 IziCharge. Hak Cipta Dilindungi.",
+                "footerLocationTitle": "Lokasi & Kontak",
+                "footerLocationDesc": "No.7. JL Sultan Agung, Guntur, Setiabudi, Kota Jakarta Selatan, Jakarta 12980",
+                "footerPhone": "Telepon: (021-83780-48)",
+                "footerNavTitle": "Navigasi",
+                "imgAltLogo": "Logo IZICharge",
+                "imgAltCharger": "Pengisi Daya EV Terpasang",
+                "menuOpen": "Buka menu utama"
+            }
+        };
+
+        // --- Variabel Global untuk Bahasa dan Galeri ---
+        let currentLanguage = 'en';
+        let galleryCurrentIndex = 0;
+        let appScreenshots = []; // Akan diisi oleh fungsi bahasa
+
+        // --- Fungsi untuk Mengganti Bahasa ---
+        function changeLanguage(lang) {
+            if (!translations[lang]) return;
+
+            currentLanguage = lang;
+            localStorage.setItem('izi-lang', lang);
+
+            // Perbarui semua elemen teks
+            document.querySelectorAll('[data-i18n-key]').forEach(el => {
+                const key = el.dataset.i18nKey;
+                const attr = el.dataset.i18nAttr;
+                const text = translations[lang][key] || key; // Fallback ke key jika tidak ada
+
+                if (attr) {
+                    el.setAttribute(attr, text);
+                } else {
+                    el.textContent = text;
+                }
+            });
+
+            // Perbarui judul halaman
+            document.title = translations[lang].pageTitle;
+
+            // Perbarui array galeri
+            appScreenshots = translations[lang].appScreenshots;
+            updateGalleryImage(galleryCurrentIndex); // Perbarui gambar galeri saat ini
+
+            // Perbarui status aktif tombol bahasa
+            document.querySelectorAll('.lang-switcher').forEach(btn => {
+                if (btn.dataset.lang === lang) {
+                    btn.classList.add('active');
+                } else {
+                    btn.classList.remove('active');
+                }
+            });
+        }
+
+        // --- Fungsi Galeri ---
+        function updateGalleryImage(index) {
+            const appImageElement = document.getElementById('app-screenshot');
+            if (appImageElement) {
+                appImageElement.classList.remove('fade-in');
+                requestAnimationFrame(() => {
+                    appImageElement.src = appScreenshots[index];
+                    const altText = `${translations[currentLanguage].appScreenshotAlt} ${index + 1}`;
+                    appImageElement.setAttribute('alt', altText);
+                    appImageElement.classList.add('fade-in');
+                });
+            }
+        }
+
+        function goToPrev() {
+            galleryCurrentIndex = (galleryCurrentIndex - 1 + appScreenshots.length) % appScreenshots.length;
+            updateGalleryImage(galleryCurrentIndex);
+        }
+
+        function goToNext() {
+            galleryCurrentIndex = (galleryCurrentIndex + 1) % appScreenshots.length;
+            updateGalleryImage(galleryCurrentIndex);
+        }
+
+        // --- DOMContentLoaded Event Listener ---
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- Mengatur Elemen ---
+            const prevButton = document.getElementById('prev-screenshot');
+            const nextButton = document.getElementById('next-screenshot');
+            const menuButton = document.getElementById('mobile-menu-button');
+            const mobileMenu = document.getElementById('mobile-menu');
+            const iconOpen = document.getElementById('menu-icon-open');
+            const iconClose = document.getElementById('menu-icon-close');
+            const menuLinks = document.querySelectorAll('.mobile-menu-link');
+            const langButtons = document.querySelectorAll('.lang-switcher');
+
+            // --- Menghubungkan Event Listener Galeri ---
+            if (prevButton && nextButton) {
+                prevButton.addEventListener('click', goToPrev);
+                nextButton.addEventListener('click', goToNext);
+            }
+
+            // --- Menghubungkan Event Listener Menu Seluler ---
+            const toggleMenu = () => {
+                mobileMenu.classList.toggle('hidden');
+                iconOpen.classList.toggle('hidden');
+                iconClose.classList.toggle('hidden');
+                document.body.classList.toggle('overflow-hidden');
+            };
+
+            if (menuButton) {
+                menuButton.addEventListener('click', toggleMenu);
+            }
+
+            menuLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    if (!mobileMenu.classList.contains('hidden')) {
+                        toggleMenu();
+                    }
+                });
+            });
+
+            // --- Menghubungkan Event Listener Animasi Scroll ---
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.1
+            };
+
+            const observerCallback = (entries, observer) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('is-visible');
+                    } else {
+                        entry.target.classList.remove('is-visible');
+                    }
+                });
+            };
+
+            const scrollObserver = new IntersectionObserver(observerCallback, observerOptions);
+            document.querySelectorAll('.animate-on-scroll').forEach(el => scrollObserver.observe(el));
+
+            // --- Menghubungkan Event Listener Pengganti Bahasa ---
+            langButtons.forEach(button => {
+                button.addEventListener('click', () => {
+                    changeLanguage(button.dataset.lang);
+                });
+            });
+
+            // --- Memuat Bahasa Awal ---
+            const savedLang = localStorage.getItem('izi-lang') || 'en';
+            changeLanguage(savedLang);
+        });
+    </script>
+
+    
+
+<header class="p-6 border-b border-gray-900 sticky top-0 z-50 bg-izi-secondary/95 backdrop-blur-sm">
+        <div class="max-w-7xl mx-auto flex justify-between items-center">
+            
+<a href="#" class="text-3xl font-extrabold text-izi-primary tracking-wider uppercase flex items-center">
+                <img src="assets/logo.png" alt="IZICharge Logo" class="h-12 w-auto" data-i18n-key="imgAltLogo" data-i18n-attr="alt">
+            </a>
+            
+<nav class="hidden md:flex items-center space-x-8 text-sm font-medium text-gray-400">
+                <a href="#hero" class="hover:text-izi-primary transition" data-i18n-key="navHome">Home</a>
+                <a href="#about" class="hover:text-izi-primary transition" data-i18n-key="navAbout">About Us</a>
+                <a href="#features" class="hover:text-izi-primary transition" data-i18n-key="navService">Service</a>
+                <a href="#contact" class="hover:text-izi-primary transition" data-i18n-key="navContact">Contact Us</a>
+                
+<div class="flex space-x-2 pl-4 border-l border-gray-700">
+                    <button class="lang-switcher" data-lang="en">EN</button>
+                    <span>|</span>
+                    <button class="lang-switcher" data-lang="id">ID</button>
+                </div>
+            </nav>
+
+            
+<div class="md:hidden flex items-center space-x-4">
+                
+<div class="flex space-x-2">
+                    <button class="lang-switcher text-sm" data-lang="en">EN</button>
+                    <span class="text-gray-600">|</span>
+                    <button class="lang-switcher text-sm" data-lang="id">ID</button>
+                </div>
+                <button id="mobile-menu-button" class="text-izi-text p-2 rounded-md">
+                    <span class="sr-only" data-i18n-key="menuOpen">Open main menu</span>
+                    
+<svg id="menu-icon-open" class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+                    
+<svg id="menu-icon-close" class="w-6 h-6 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path></svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    
+
+<div id="mobile-menu" class="hidden fixed inset-0 bg-izi-secondary z-40 flex flex-col items-center justify-center space-y-8">
+        <a href="#hero" class="mobile-menu-link text-3xl font-bold text-gray-300 hover:text-izi-primary transition" data-i18n-key="navHome">Home</a>
+        <a href="#about" class="mobile-menu-link text-3xl font-bold text-gray-300 hover:text-izi-primary transition" data-i18n-key="navAbout">About Us</a>
+        <a href="#features" class="mobile-menu-link text-3xl font-bold text-gray-300 hover:text-izi-primary transition" data-i18n-key="navService">Service</a>
+        <a href="#contact" class="mobile-menu-link text-3xl font-bold text-gray-300 hover:text-izi-primary transition" data-i18n-key="navContact">Contact Us</a>
+    </div>
+
+    
+
+<section id="hero" class="pt-16 pb-12 md:pt-24 md:pb-16 lg:pt-32 lg:pb-24 bg-izi-secondary overflow-hidden hero-background min-h-[70vh] flex items-center">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8 hero-content">
+            <div class="max-w-4xl text-left">
+                <h1 class="text-6xl md:text-7xl lg:text-[5.5rem] font-extrabold text-white mb-6 leading-tight">
+                    <span data-i18n-key="heroLine1">We Bring Future Ready</span> <br>
+                    <span class="text-izi-primary" data-i18n-key="heroLine2">Charging</span>
+                    <span data-i18n-key="heroLine3"> To Your</span> <br>
+                    <span data-i18n-key="heroLine4">Everyday Life</span>
+                </h1>
+                <a href="#about" class="inline-flex items-center justify-center px-6 py-3 border border-izi-primary text-base font-medium rounded-full text-izi-primary hover:bg-izi-primary/10 transition duration-300" data-i18n-key="heroButton">
+                    Learn More
+                    <svg class="w-4 h-4 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    
+
+<section id="about" class="py-16 md:py-24 bg-izi-secondary">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8">
+            <h2 class="text-5xl md:text-6xl font-extrabold text-white mb-12 animate-on-scroll" data-i18n-key="aboutTitle">
+                Why Choose <br> Us?
+            </h2>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-16 items-center">
+                
+
+<div class="md:pr-12 animate-on-scroll" style="--scroll-delay: 100ms;">
+                    <h3 class="text-3xl md:text-4xl font-bold text-white mb-8 border-b-2 border-izi-primary/50 pb-4 inline-block">
+                        <span data-i18n-key="aboutSubtitle">Evolutionary electric vehicle charging stations that are faster & more efficient.</span>
+                        <span class="text-izi-primary ml-4">→</span>
+                    </h3>
+                    <p class="text-lg text-izi-text mb-6" data-i18n-key="aboutDesc">
+                        We revolutionize EV charging, offering rapid charging capabilities, sustainability, and a seamless user experience.
+                    </p>
+                    <p class="text-md text-gray-500 italic" data-i18n-key="aboutQuote">
+                        "Power Your Electric Vehicle With Energy That's As Clean As Your Drive."
+                    </p>
+                </div>
+
+                
+
+<div class="relative bg-izi-secondary rounded-3xl p-4 md:p-8 flex items-center justify-center animate-on-scroll" style="--scroll-delay: 200ms;">
+                    <img src="assets/charge.jpg" alt="EV Charger Plugged In" class="w-full h-auto max-w-lg rounded-xl shadow-lg izi-glow" data-i18n-key="imgAltCharger" data-i18n-attr="alt">
+                    <div class="absolute bottom-4 right-4 w-24 h-24 bg-gray-700 rounded-lg opacity-80"></div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    
+
+<section id="features" class="py-16 md:py-24 bg-izi-dark-card border-t border-b border-gray-900">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8">
+            <div class="text-left mb-16 animate-on-scroll">
+                <h2 class="text-4xl md:text-5xl font-bold text-white mb-2" data-i18n-key="featuresTitle">Why Consumers Love IziCharge?</h2>
+                <p class="text-xl text-izi-text/80" data-i18n-key="featuresSubtitle">Smart Features Designed for Modern EV Users.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                
+
+<div class="p-6 md:p-8 bg-izi-secondary rounded-xl border-l-4 border-izi-primary shadow-xl flex justify-between items-center transition duration-300 hover:bg-gray-900 lg:col-span-1 animate-on-scroll" style="--scroll-delay: 100ms;">
+                    <div>
+                        <h3 class="text-3xl font-semibold text-white mb-1" data-i18n-key="feature1Title">24/7 Availability</h3>
+                        <p class="text-lg text-izi-text" data-i18n-key="feature1Desc">Always-On Stations. Ready Anytime, Day or Night.</p>
+                    </div>
+                    <span class="text-izi-primary text-3xl font-bold ml-4">→</span>
+                </div>
+
+                
+
+<div class="p-6 md:p-8 bg-izi-secondary rounded-xl border-l-4 border-izi-primary shadow-xl flex justify-between items-center transition duration-300 hover:bg-gray-900 lg:col-span-1 animate-on-scroll" style="--scroll-delay: 200ms;">
+                    <div>
+                        <h3 class="text-3xl font-semibold text-white mb-1" data-i18n-key="feature2Title">Fast Charging</h3>
+                        <p class="text-lg text-izi-text" data-i18n-key="feature2Desc">Get Back On The Road In Minutes, Not Hours.</p>
+                    </div>
+                    <span class="text-izi-primary text-3xl font-bold ml-4">→</span>
+                </div>
+
+                
+
+<div class="p-6 md:p-8 bg-izi-secondary rounded-xl border-l-4 border-izi-primary shadow-xl flex justify-between items-center transition duration-300 hover:bg-gray-900 lg:col-span-1 animate-on-scroll" style="--scroll-delay: 300ms;">
+                    <div>
+                        <h3 class="text-3xl font-semibold text-white mb-1" data-i18n-key="feature3Title">National Coverage</h3>
+                        <p class="text-lg text-izi-text" data-i18n-key="feature3Desc">Find Charging Whenever Your Journey Takes You.</p>
+                    </div>
+                    <span class="text-izi-primary text-3xl font-bold ml-4">→</span>
+                </div>
+
+                
+
+<div class="p-6 md:p-8 bg-izi-secondary rounded-xl border-l-4 border-izi-primary shadow-xl flex justify-between items-center transition duration-300 hover:bg-gray-900 lg:col-span-1 animate-on-scroll" style="--scroll-delay: 400ms;">
+                    <div>
+                        <h3 class="text-3xl font-semibold text-white mb-1" data-i18n-key="feature4Title">Cost-Efficient</h3>
+                        <p class="text-lg text-izi-text" data-i18n-key="feature4Desc">Clean Charging That's Affordable And Eco-Friendly.</p>
+                    </div>
+                    <span class="text-izi-primary text-3xl font-bold ml-4">→</span>
+                </div>
+
+                
+
+<div class="lg:col-span-2 bg-izi-primary p-6 md:p-10 rounded-2xl shadow-2xl mt-8 flex flex-col md:flex-row items-center justify-between text-izi-secondary animate-on-scroll" style="--scroll-delay: 200ms;">
+                    
+                    
+
+<div class="md:w-1/2 flex flex-col items-start justify-center text-center md:text-left mb-6 md:mb-0">
+                        <h3 class="text-3xl md:text-4xl font-extrabold mb-4" data-i18n-key="appTitle">Charge Anytime, Anywhere with our App.</h3>
+                        <p class="text-lg mb-6" data-i18n-key="appDesc">Explore the features of the IZICharge mobile app.</p>
+                        
+                        <div class="flex space-x-4">
+                            <button id="prev-screenshot" class="p-3 text-lg font-semibold rounded-full bg-izi-secondary text-izi-primary hover:bg-gray-800 transition duration-300 flex items-center justify-center">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
+                            </button>
+                            <button id="next-screenshot" class="p-3 text-lg font-semibold rounded-full bg-izi-secondary text-izi-primary hover:bg-gray-800 transition duration-300 flex items-center justify-center">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                            </button>
+                        </div>
+                    </div>
+
+                    
+
+<div class="md:w-1/3 flex justify-center">
+                        <img id="app-screenshot" 
+                             src="https://placehold.co/400x800/121212/BFFC05?text=App+Screen+1" 
+                             alt="App Screenshot 1" 
+                             class="w-48 md:w-full max-w-xs h-auto rounded-3xl shadow-2xl ring-4 ring-izi-secondary/20 object-cover transform transition duration-500">
+                    </div>
+
+                </div>
+
+            </div>
+        </div>
+    </section>
+
+    
+
+<footer id="contact" class="py-12 bg-izi-secondary border-t border-gray-900 animate-on-scroll">
+        <div class="max-w-7xl mx-auto px-6 lg:px-8 text-gray-500 text-sm grid grid-cols-1 md:grid-cols-4 gap-8">
+            
+
+<div class="md:col-span-1">
+                <p class="text-2xl font-extrabold text-izi-primary tracking-wider uppercase mb-4">IZICharge</p>
+                <p data-i18n-key="footerRights">&copy; 2025 IziCharge. All Rights Reserved.</p>
+            </div>
+
+            
+
+<div class="md:col-span-2 space-y-2">
+                <h4 class="text-lg font-semibold text-white mb-2" data-i18n-key="footerLocationTitle">Location & Contact</h4>
+                <p data-i18n-key="footerLocationDesc">No.7. JL Sultan Agung, Guntur, Setiabudi, South Jakarta City, Jakarta 12980</p>
+                <p data-i18n-key="footerPhone">Phone: (021-83780-48)</p>
+            </div>
+
+            
+
+<div class="space-y-2">
+                <h4 class="text-lg font-semibold text-white mb-2" data-i18n-key="footerNavTitle">Navigation</h4>
+                <div class="flex flex-col space-y-1">
+                    <a href="#hero" class="hover:text-izi-primary transition" data-i18n-key="navHome">Home</a>
+                    <a href="#about" class="hover:text-izi-primary transition" data-i18n-key="navAbout">About Us</a>
+                    <a href="#features" class="hover:text-izi-primary transition" data-i18n-key="navService">Services</a>
+                    <a href="#contact" class="hover:text-izi-primary transition" data-i18n-key="navContact">Contact Us</a>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+</body>
+</html>
+
